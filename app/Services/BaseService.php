@@ -9,13 +9,14 @@ use App\Shell\Shell;
 use Illuminate\Support\Str;
 use Throwable;
 
-abstract class BaseService
+class BaseService
 {
     protected static $category;
     protected static $displayName;
 
-    protected $organization = 'library'; // Official repositories use `library` as the organization name.
-    protected $imageName;
+    // protected $organization = 'library'; // Official repositories use `library` as the organization name.
+    protected $organization = 'mysql'; // TODO: For now changing it to mysql later change it to liabrary and mak it dynamic
+    protected $imageName = 'mysql-server'; // TODO: make it dynamic
     protected $dockerTagsClass = DockerTags::class;
     protected $tag;
     protected $dockerRunTemplate;
@@ -39,11 +40,11 @@ abstract class BaseService
     protected $docker;
     protected $useDefaults = false;
 
-    public function __construct(Shell $shell, Environment $environment, Docker $docker)
+    public function __construct()
     {
-        $this->shell = $shell;
-        $this->environment = $environment;
-        $this->docker = $docker;
+        // $this->shell = $shell;
+        // $this->environment = $environment;
+        // $this->docker = $docker;
 
         $this->defaultPrompts = array_map(function ($prompt) {
             if ($prompt['shortname'] === 'port') {
@@ -52,11 +53,6 @@ abstract class BaseService
 
             return $prompt;
         }, $this->defaultPrompts);
-
-        $this->promptResponses = [
-            'organization' => $this->organization,
-            'image_name' => $this->imageName,
-        ];
     }
 
     public static function name(): string

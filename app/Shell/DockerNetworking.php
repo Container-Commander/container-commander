@@ -9,10 +9,10 @@ class DockerNetworking
     protected $shell;
     protected $formatter;
 
-    public function __construct(Shell $shell, DockerFormatter $formatter)
+    public function __construct()
     {
-        $this->shell = $shell;
-        $this->formatter = $formatter;
+        $this->shell = new Shell;
+        $this->formatter = new DockerFormatter;
     }
 
     public function networkSettings(string $alias, string $image_name): string

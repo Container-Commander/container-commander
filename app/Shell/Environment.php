@@ -8,9 +8,9 @@ class Environment
 {
     protected $shell;
 
-    public function __construct(Shell $shell)
+    public function __construct()
     {
-        $this->shell = $shell;
+        $this->shell = new Shell;
     }
 
     public function isMacOs(): bool

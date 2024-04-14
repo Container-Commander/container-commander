@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Shell\Docker;
 use Illuminate\Support\Facades\Process;
 use Livewire\Component;
 
@@ -23,9 +24,7 @@ class Container extends Component
     }
 
     public function startContainer($containerId){
-        $process = "docker start $containerId";
-        $result = Process::run($process);
-        if($result->successful()){
+        if((new Docker)->startContainer($containerId)){
             session()->flash('success', 'Container started successfully');
         } else {
             session()->flash('fail', 'Someting went wrong, please try again');
@@ -34,13 +33,22 @@ class Container extends Component
     }
 
     public function stopContainer(string $containerId){
-        $process = "docker stop $containerId";
-        $result = Process::run($process);
-        if($result->successful()){
+        if((new Docker)->stopContainer($containerId)){
             session()->flash('success', 'Container Stopped successfully');
         } else {
             session()->flash('fail', 'Someting went wrong, please try again');
         }
         return redirect()->route('home');
+    }
+
+    public function deleteContainer(string $containerId){
+
+        if((new Docker)->removeContainer($containerId)){
+            session()->flash('success', 'Container Deleted successfully');
+        } else {
+            session()->flash('fail', 'Someting went wrong, please try again');
+        }
+        return redirect()->route('home');
+        
     }
 }

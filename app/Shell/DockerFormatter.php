@@ -3,6 +3,7 @@
 namespace App\Shell;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class DockerFormatter
 {
@@ -19,7 +20,7 @@ class DockerFormatter
             return explode('|', $line);
         })->filter();
 
-        $keys = array_map('App\underscore_slug', $containers->shift());
+        $keys = array_map('App\Shell\underscore_slug', $containers->shift());
 
         if ($containers->isEmpty()) {
             return $containers;
@@ -29,4 +30,8 @@ class DockerFormatter
             return array_combine($keys, $container);
         });
     }
+}
+function underscore_slug(string $string): string
+{
+    return Str::slug($string, '_');
 }

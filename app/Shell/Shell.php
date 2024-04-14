@@ -2,35 +2,19 @@
 
 namespace App\Shell;
 
-use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Process\Process;
 
 class Shell
 {
-    protected $output;
-
-    public function __construct(ConsoleOutput $output)
-    {
-        $this->output = $output;
-    }
 
     public function exec(string $command, array $parameters = [], bool $quiet = false): Process
     {
-        $didAnything = false;
-
         $process = $this->buildProcess($command);
-        $process->run(function ($type, $buffer) use ($quiet, $didAnything) {
+        $process->run(function ($type, $buffer) use ($quiet) {
             if (empty($buffer) || $buffer === PHP_EOL || $quiet) {
                 return;
             }
-
-            $this->output->writeLn($this->formatMessage($buffer, $type === process::ERR));
-            $didAnything = true;
         }, $parameters);
-
-        if ($didAnything) {
-            $this->output->writeLn("\n");
-        }
 
         return $process;
     }

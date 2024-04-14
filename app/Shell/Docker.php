@@ -15,19 +15,14 @@ class Docker
     protected $networking;
     protected $environment;
 
-    public function __construct(
-        Shell $shell,
-        DockerFormatter $formatter,
-        DockerNetworking $networking,
-        Environment $environment
-    ) {
-        $this->shell = $shell;
-        $this->formatter = $formatter;
-        $this->networking = $networking;
-        $this->environment = $environment;
+    public function __construct() {
+        $this->shell = new Shell;
+        $this->formatter = new DockerFormatter;
+        $this->networking = new DockerNetworking;
+        $this->environment = new Environment;
     }
 
-    public function removeContainer(string $containerId): void
+    public function removeContainer(string $containerId): bool
     {
         if ($this->stoppableTakeoutContainers()->contains(function ($container) use ($containerId) {
             return $container['container_id'] === $containerId;
@@ -37,12 +32,10 @@ class Docker
 
         $process = $this->shell->exec('docker rm ' . $containerId);
 
-        if (! $process->isSuccessful()) {
-            throw new Exception('Failed removing container ' . $containerId);
-        }
+        return $process->isSuccessful();
     }
 
-    public function stopContainer(string $containerId): void
+    public function stopContainer(string $containerId): bool
     {
         if (! $this->stoppableTakeoutContainers()->contains(function ($container) use ($containerId) {
             return $container['container_id'] === $containerId;
@@ -52,9 +45,7 @@ class Docker
 
         $process = $this->shell->exec('docker stop ' . $containerId);
 
-        if (! $process->isSuccessful()) {
-            throw new Exception('Failed stopping container ' . $containerId);
-        }
+        return $process->isSuccessful();
     }
 
     public function logContainer(string $containerId): void
@@ -72,7 +63,7 @@ class Docker
         }
     }
 
-    public function startContainer(string $containerId): void
+    public function startContainer(string $containerId): bool
     {
         if (! $this->startableTakeoutContainers()->contains(function ($container) use ($containerId) {
             return $container['container_id'] === $containerId;
@@ -82,9 +73,7 @@ class Docker
 
         $process = $this->shell->exec('docker start ' . $containerId);
 
-        if (! $process->isSuccessful()) {
-            throw new Exception('Failed starting container ' . $containerId);
-        }
+        return $process->isSuccessful();
     }
 
     public function isInstalled(): bool
@@ -156,7 +145,7 @@ class Docker
         ));
     }
 
-    public function bootContainer(string $dockerRunTemplate, array $parameters): void
+    public function bootContainer(string $dockerRunTemplate, array $parameters): bool
     {
         $this->networking->ensureNetworkCreated();
 
@@ -168,9 +157,7 @@ class Docker
 
         $process = $this->shell->exec($command, $parameters);
 
-        if (! $process->isSuccessful()) {
-            throw new Exception('Failed installing ' . $parameters['image_name']);
-        }
+        return $process->isSuccessful();
     }
 
     public function attachedVolumeName(string $containerId)
