@@ -9,7 +9,23 @@ use Livewire\Component;
 class Container extends Component
 {
     public $containers;
+
+    public string $containerErrorMessage;
+
+    public bool $isDockerRunning = true;
+    public bool $isDockerInstalled = true;
+
     public function mount(){
+        $docker = new Docker;
+        if (!$docker->isInstalled()){
+            $this->containerErrorMessage = "Docker is not installed on your system.";
+            $this->isDockerRunning = $this->isDockerInstalled = false;
+        }
+        if (!$docker->isDockerServiceRunning()){
+            $this->containerErrorMessage = "Docker is not started; please start Docker.";
+            $this->isDockerRunning = false;
+        }
+        // dd($docker->isDockerServiceRunning());
         $process = sprintf(
             'docker ps -a --filter "name=TO-" --format "table %s%s"',
             '{\"container_id\": \"{{.ID}}\",\"name\":\"{{.Names}}\",\"status\":\"{{.Status}}\",\"state\":\"{{.State}}\",\"ports\":\"{{.Ports}}\",',
