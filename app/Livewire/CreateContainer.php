@@ -88,7 +88,7 @@ class CreateContainer extends Component
         $this->buildParameters();
         $validatedData = $this->validate();
         $validatedData['image_name'] = 'mysql-server';
-        $validatedData['allow_empty_password'] = 1;
+        $validatedData['allow_empty_password'] = 0;
         $validatedData['root_password'] = $validatedData['root_password'] ?? '';
         $container = (new Docker)->bootContainer((new MySql)->dockerRunTemplate, $validatedData);
         if($container){
